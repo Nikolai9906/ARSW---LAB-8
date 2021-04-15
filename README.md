@@ -49,16 +49,16 @@ Cuando un conjunto de usuarios consulta un enésimo número (superior a 1000000)
 ![](images/part1/part1-vm-3000InboudRule.png)
 
 7. La función que calcula en enésimo número de la secuencia de Fibonacci está muy mal construido y consume bastante CPU para obtener la respuesta. Usando la consola del Browser documente los tiempos de respuesta para dicho endpoint usando los siguintes valores:
-    * 1000000
-    * 1010000
-    * 1020000
-    * 1030000
-    * 1040000
-    * 1050000
-    * 1060000
-    * 1070000
-    * 1080000
-    * 1090000    
+    * 1000000 - 19 segundos
+    * 1010000 - 21 segundos
+    * 1020000 - 23 segundos
+    * 1030000 - 25 segundos
+    * 1040000 - 27 segundos
+    * 1050000 - 29 segundos
+    * 1060000 - 31 segundos
+    * 1070000 - 33 segundos
+    * 1080000 - 35 segundos
+    * 1090000 - 37 segundos   
 
 8. Dírijase ahora a Azure y verifique el consumo de CPU para la VM. (Los resultados pueden tardar 5 minutos en aparecer).
 
