@@ -86,18 +86,70 @@ Cuando un conjunto de usuarios consulta un enésimo número (superior a 1000000)
 **Preguntas**
 
 1. ¿Cuántos y cuáles recursos crea Azure junto con la VM?
+> Se crean varios recursos:
+	- Direcciones IP publicas y privadas
+	- Virtual Network
+	- Grupos de seguridad de red
 2. ¿Brevemente describa para qué sirve cada recurso?
+> Virtual Network: Es el bloque de contruccion para una red privada en Azure. Permite que muchos tipos de recursos de Azure, como las maquinas virtuales de Azure puedan comunicarse de forma segura entre si. Basicamente es similar a una red tradicional que opera su propio centro de datos.
+> IP publica: Permiten que los recursos de internet se comuniquen con los recursos de Azure, tambien permiten que los recursos de Azure se comuniquen con los servicios de internet.
+> IP privada: Permite la comunicacion con los recursos de Azure:
+	- Maquinas virtuales
+	- Load Balancers
+	- Redes virtualesRed local de una pasarela de VPN
+> Grupo de seguridad de red: Contiene reglas de seguridad que permiten o deniegan el trafico de red entrante o saliente. Se puede especificar para cada regla el origen, destino, puerto y protocolo.
 3. ¿Al cerrar la conexión ssh con la VM, por qué se cae la aplicación que ejecutamos con el comando `npm FibonacciApp.js`? ¿Por qué debemos crear un *Inbound port rule* antes de acceder al servicio?
+> Ya que al ejecutar a traves de ssh los procesos quedan conectados a esta conexion previa, asi que cuando se cierre los procesos cierran su ejecucion. Esta regla permite el acceso publico a un puerto especifico de la maquina virtual, asi poder ejecutar la aplicacion por este puerto de manera accesible.
 4. Adjunte tabla de tiempos e interprete por qué la función tarda tando tiempo.
+
+| B1Is |
+| Valor | Tiempo |
+| ------------- | ------------- |
+| 1000000 | 22.96  |
+| 1010000 | 21.28  |
+| 1020000 | 36.51  |
+| 1030000 | 37.9  |
+| 1040000 | 22.82  |
+| 1050000 | 23.89  |
+| 1060000 | 23.89  |
+| 1070000 | 24.41  |
+| 1080000 | 25.49  |
+| 1090000 | 25.67  |
+
+| B2ms |
+| Valor | Tiempo |
+| ------------- | ------------- |
+| 1000000 | 14.95  |
+| 1010000 | 15.74  |
+| 1020000 | 19.91  |
+| 1030000 | 19.45  |
+| 1040000 | 16.75  |
+| 1050000 | 16.45  |
+| 1060000 | 17.23  |
+| 1070000 | 17.06  |
+| 1080000 | 24.48  |
+| 1090000 | 17.5  |
+
 5. Adjunte imágen del consumo de CPU de la VM e interprete por qué la función consume esa cantidad de CPU.
+> ![](images/img_2.png)
+> ![](images/img_6.png)
+> Consume la cantidd de CPUya que la implementacion no es tan eficaz el cual llega a usar demasiado recursos para hacer iteraciones
 6. Adjunte la imagen del resumen de la ejecución de Postman. Interprete:
     * Tiempos de ejecución de cada petición.
     * Si hubo fallos documentelos y explique.
+	> ![](images/img_4.png)
+	> ![](images/img_5.png)
+	> Se pueden observar fallos de desconexion y tiempo de ejecucion. Pero cuando realizamos el aumento los tiempos disminuyen y varian.
 7. ¿Cuál es la diferencia entre los tamaños `B2ms` y `B1ls` (no solo busque especificaciones de infraestructura)?
+> Su diferencia es la capacidad en memoria, uno con 0.5 Gb y otro con 8Gb cada uno respectivamente. Ademas de una gran diferencia en la CPU, ya que si vemos B2ms es el doble de B1ls generando esto que el precio por mes sea mucho mas de uno que de otro por la cantidad de recursos que brinda este servicio. Dicho esto se puede intuir que tambien su rendimiento mejora de una gran manera con una mejor optimizacion de caracteristicas tecnicas que posee cada uno de estos.
 8. ¿Aumentar el tamaño de la VM es una buena solución en este escenario?, ¿Qué pasa con la FibonacciApp cuando cambiamos el tamaño de la VM?
+> No lo es. Debido a que las pruebas siguen fallando por una mala implementacion de la aplicacion, pero por otra parte podemos notar un menor consumo de CPU debido que es mas grande.
 9. ¿Qué pasa con la infraestructura cuando cambia el tamaño de la VM? ¿Qué efectos negativos implica?
+> Cuando ocurre algun cambio fisico la VM debe ser reiniciada por completo por lo que algu servicio que este en ejecucion se vera afectado por lo que se refleja un efecto negativo en la disponibilidad de los servicios.
 10. ¿Hubo mejora en el consumo de CPU o en los tiempos de respuesta? Si/No ¿Por qué?
+> Hubo una mejora de casi el 40%.
 11. Aumente la cantidad de ejecuciones paralelas del comando de postman a `4`. ¿El comportamiento del sistema es porcentualmente mejor?
+> No, ya que podemos seguir observando la msima cantidad de erores al momento de ejecutarlo.
 
 ### Parte 2 - Escalabilidad horizontal
 
@@ -123,7 +175,7 @@ Antes de continuar puede eliminar el grupo de recursos anterior para evitar gast
 
 5. Cree una *Virtual Network* dentro del grupo de recursos, guiese con la siguiente imágen.
 
-![](images/part2/part2-vn-create.png)
+img_2
 
 #### Crear las maquinas virtuales (Nodos)
 
@@ -186,14 +238,28 @@ newman run ARSW_LOAD-BALANCING_AZURE.postman_collection.json -e [ARSW_LOAD-BALAN
 **Preguntas**
 
 * ¿Cuáles son los tipos de balanceadores de carga en Azure y en qué se diferencian?, ¿Qué es SKU, qué tipos hay y en qué se diferencian?, ¿Por qué el balanceador de carga necesita una IP pública?
+> Hay 2 tipos de balanceadores de carga, el balenceador publico y el privado los cuales se diferencian en que el balanceador publico esta hecho para dar conexiones de salida a las maquinas virtuales mientras que el privado se utiliza para realizar el equilibrio de carga dentro de una red virtual
 * ¿Cuál es el propósito del *Backend Pool*?
+> Es un componente critico del balenceador de carga. El pool de backend define el grupo de recursos que servira el trafico para una regla de equilibrio de carga determinada.
 * ¿Cuál es el propósito del *Health Probe*?
+> Ayudar a que el Load Balancer detecte el estado del extremo del backend. La configuracion determina que instancias del backend pool reciben nuevos flujos.
 * ¿Cuál es el propósito de la *Load Balancing Rule*? ¿Qué tipos de sesión persistente existen, por qué esto es importante y cómo puede afectar la escalabilidad del sistema?.
+> Define el trafico de red por medio de las maquinas virtuales, permitiendo sesiones que no tienen una persistencia definida lo cual significa que cuando se realice una peticion llegara a un usuario previo y no a uno nuevo.
 * ¿Qué es una *Virtual Network*? ¿Qué es una *Subnet*? ¿Para qué sirven los *address space* y *address range*?
+> Es el bloque de creacion fundamenal de una red privada en Azure, tambien permite muchos tipos de recursos como Azure VM para comunicar de forma segura entre usuarios con internet y con redes locales.
+> Es un rango de direcciones, el cual se utiliza normalmente cuando se tienen redes muy grandes.
+> Son aquellas direcciones de red asignables dentro de una maquina virtual y address range son las redes asignadas dentro de una subnet.
 * ¿Qué son las *Availability Zone* y por qué seleccionamos 3 diferentes zonas?. ¿Qué significa que una IP sea *zone-redundant*?
+> Es una oferta de alta disponibilidad que protege sus aplicaciones y datos de los fallos del centro de datos. Las zonas de disponibilidad son ubicaciones fisicas dentro de una region de Azure.
+> Signigica que es una direccion que replica las peticiones y datos por medio de Availability Zone.
 * ¿Cuál es el propósito del *Network Security Group*?
+> Sirve para filtrar el trafico de red hacia y desde los recursos en una red virtual en Azure. Este contiene reglas de seguridad que permiten o deniegan el trafico de red entre el trafico saliente de varios recursos de Azure. Para cada una de estas reglas se puede especificar el origen, destino, puerto y protocolo que se desea implementar.
 * Informe de newman 1 (Punto 2)
+> ![](images/img_4.png)
+> ![](images/img_5.png)
 * Presente el Diagrama de Despliegue de la solución.
+> ![](images/ARSW_8.png)
+
 
 
 
